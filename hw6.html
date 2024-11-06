@@ -9783,7 +9783,7 @@ eps=0.7199024461115628, min_samples=2: [-1  0  1]
 <li>KMeans (BOW): the <code>kmeans_bow</code> clustering did not result in similar clusters as manual clustering, the grouping does not make sense. This is likely due to the fact that the BOW representation does not capture the semantic information of the sentence well, as it only captures the frequency of words in the sentence.</li>
 <li>KMeans (Sentence Embeddings): the <code>emb_kmeans</code> clustering nearly resulted in the same clusters as the manual clustering, which is a good sign. With the only misclassification where biodiversity was grouped with food (perhaps because the text is so short). This method performed better compared to the BOW representation, as it captures the semantic information of the sentence better in a higher dimension vector space.</li>
 <li>DBScan: the <code>dbscan_emb</code> clustering did not result in similar clusters as manual clustering, the grouping was not able to separate "Computer Science" and "Environmental science" clusters at all. Despite tuning hyperparameters, the clustering results were not as expected. This is likely caused by the fact that clusters are not well separated in the high dimensional space.</li>
-<li>Heirarchical: the <code>hier_emb</code> clustering resulted in the same clusters as <code>emb_kmeans</code>, which is good. The dendrogram shows relatively even splits. The cosine distance metric was able to separate the clusters well.</li>
+<li>Heirarchical: the <code>hier_emb</code> clustering resulted in the same clusters as <code>emb_kmeans</code>, which is good. The dendrogram shows relatively even splits. The cosine distance metric was able to separate the clusters well. Using sentence embeddings seemed to be effective at matching our intuitions as sentences with similar semantics were merged together successfully.</li>
 </ol>
 <p>Overall, the sentence embedding representation performed better than the BOW representation. The KMeans clustering was the easiest and quickest to use since the number of clusters was known. DBScan performed worse and was the most difficult to use as it required tuning of hyperparameters to get meaningful clusters. Moreover, the data lacked clear separation for DBScan to be effective. Hierarchical clustering performed well and was not to difficult as its possible to restrict by <code>maxclust</code> to get the desired number of clusters.</p>
 </div>
@@ -10928,7 +10928,7 @@ Name: name, Length: 9100, dtype: object</pre>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <p>We selected the k-value 18 by using the elbow method, where the error decreases the most within the range, but also avoids overfitting on the training data. The metric used to evaluate the clustering quality is the "within-cluster sum of squares" (or "distortion")</p>
-<p>Note: the results from the elblow method fluctuated, and the most optimal k-value fluctuated around 18. So we decided to go with 18 as the k-value.</p>
+<p>Note: the results from the elblow method fluctuated, and the most optimal k-value fluctuated around 18. So we decided to go with 18 as the k-value, even though the elbow in the graph shows 21 as the most optimal choice.</p>
 <p>From the printed cluster results, we can see that the clusters are somewhat coherent, which suggest that our selected number of clusters is reasonable. Moreover, in the UMAP plot, we can see clear groups of clusters -- although some clusters are overlapping, which is expected given the high-dimensional space.</p>
 </div>
 </div>
@@ -12018,8 +12018,11 @@ island plunder rum cake
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <p>In comparison, DBSCAN basically did not produce much of substance at all. Our best model only produced two clusters:</p>
-<p>Cluster -1: Names of cocktails? -- Generally weird and shorter names
-Cluster 0: Everything else</p>
+<p>Summary of Cluster Labels:</p>
+<ul>
+<li>Cluster -1: Names of cocktails? -- Generally weird and shorter names</li>
+<li>Cluster 0: Everything else</li>
+</ul>
 <p>DBSCAN really struggled to find meaningful clusters out of the data, since this is density based perhaps this suggests a distinct lack of clear dense regions that the text data has. This is likely due to the curse of dimensionality, as we have a lot of features, and as a result, it may be very sparsely distributed, which makes it difficult to find pockets of high density to group together.</p>
 <hr>
 </hr></div>
@@ -12047,7 +12050,7 @@ Cluster 0: Everything else</p>
 <li>Cluster 10: Themed Desserts and Cocktails</li>
 </ul>
 <p>Overall, the clusters are not as coherent as the KMeans model. For example, cluster 3 contains unique or singular items, which is not a very coherent grouping. The confusion is likely due to the fact that the text is so short. Moreover, there a good clusters but ones that can clearly be separated further, like Cluster 7 and 9.</p>
-<p>In hiearichal clustering, similar clusters are grouped together first, and so the clusters with single items suggest that they are very significantly different from the other items that they get their own cluster. Because we only see a small sample from each cluster, it at first seems like hiearichal clustering tends to group in themes rather than specific key words unlike KNN. But this is likely because some clusters are simply way larger than others, and so keywords that are similar like "cookies", and "cakes" will be pooled together first, while the really weird clusters like texas, and pirates end up being pooled together last. As a result, we lose a lot of resolution on a majority of clusters as only outliers are specifically highlighted.</p>
+<p>In hiearichal clustering, similar clusters are grouped together first, and so the clusters with single items suggest that they are very significantly different from the other items that they get their own cluster. Because we only see a small sample from each cluster, it at first seems like hiearichal clustering tends to group in themes rather than specific key words unlike K-Means. But this is likely because some clusters are simply way larger than others, and so keywords that are similar like "cookies", and "cakes" will be pooled together first, while the really weird clusters like mob witnesses, and brad pitt end up being pooled together last. As a result, we lose a lot of resolution on a majority of clusters as only outliers are specifically highlighted.</p>
 <p>Being a distance based method, heiarichal clustering also suffers from the same issues as DBSCAN, where the high dimensionality of the data makes it difficult to find meaningful clusters.</p>
 <hr>
 </hr></div>
@@ -12060,7 +12063,7 @@ Cluster 0: Everything else</p>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>In summary, KNN likes to pool words by keywords -- making it likely the best choice to use in a real world scenario, as people will probably want to know different recipes of things that are directly related.</p>
+<p>In summary, KMeans likes to pool words by keywords -- making it likely the best choice to use in a real world scenario, as people will probably want to know different recipes of things that are directly related.</p>
 <p>DBSCAN has no clue what the clusters are, and likely needs furthur tuning and refinement.</p>
 <p>And Hiearchical clustering tends to pool words that are the most different from each other, giving us a lot of imbalenced clusters, with very niche categories that may not be very large.</p>
 </div>
